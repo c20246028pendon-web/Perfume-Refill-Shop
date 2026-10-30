@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfume Refill Shop</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100">
+
+<div class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="w-60 bg-[#352B2A] text-white p-5 hidden md:block">
+    <h1 class="text-2xl font-bold text-pink-200">LUIS</h1>
+    <p class="text-xs text-gray-300 mb-8">Perfume Refill Shop</p>
+
+    <nav class="space-y-3">
+        <button onclick="page('dashboard')" class="menu">🏠 Dashboard</button>
+        <button onclick="page('products')" class="menu">🧴 Products</button>
+        <button onclick="page('inventory')" class="menu">📦 Inventory</button>
+        <button onclick="page('customers')" class="menu">👥 Customers</button>
+        <button onclick="page('sales')" class="menu">🛒 Sales</button>
+        <button onclick="page('transactions')" class="menu">🧾 Transactions</button>
+    </nav>
+</aside>
+
+<!-- CONTENT -->
+<main class="flex-1 p-5 md:p-8">
+
+<header class="flex justify-between items-center mb-8">
+    <div>
+        <h2 id="title" class="text-2xl font-bold">Dashboard</h2>
+        <p class="text-gray-500 text-sm">Perfume Shop Management System</p>
+    </div>
+    <span class="bg-pink-100 text-pink-800 px-4 py-2 rounded-lg text-sm">
+        Administrator
+    </span>
+</header>
+
+<!-- MOBILE NAVIGATION -->
+<div class="flex flex-wrap gap-2 mb-6 md:hidden">
+    <button onclick="page('dashboard')" class="mobile">Dashboard</button>
+    <button onclick="page('products')" class="mobile">Products</button>
+    <button onclick="page('inventory')" class="mobile">Inventory</button>
+    <button onclick="page('customers')" class="mobile">Customers</button>
+    <button onclick="page('sales')" class="mobile">Sales</button>
+    <button onclick="page('transactions')" class="mobile">Transactions</button>
+</div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section">
+
+    <div class="bg-pink-200 p-6 rounded-xl mb-6">
+        <h2 class="text-2xl font-bold">Welcome to Scentify!</h2>
+        <p class="text-gray-700">Manage your perfume business easily.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <div class="card">
+            <p>Total Products</p>
+            <h2 id="totalProducts" class="number">0</h2>
+        </div>
+
+        <div class="card">
+            <p>Total Customers</p>
+            <h2 id="totalCustomers" class="number">0</h2>
+        </div>
+
+        <div class="card">
+            <p>Total Sales</p>
+            <h2 id="totalSales" class="number">₱0</h2>
+        </div>
+
+        <div class="card">
+            <p>Low Stock</p>
+            <h2 id="lowStock" class="number">0</h2>
+        </div>
+
+    </div>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products" class="section hidden">
+
+    <div class="flex justify-between mb-5">
+        <h2 class="text-xl font-bold">Product List</h2>
+        <button onclick="addProduct()" class="btn">+ Add Product</button>
+    </div>
+
+    <div class="bg-white rounded-xl overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-pink-100">
+                <tr>
+                    <th class="p-3">Name</th>
+                    <th class="p-3">Category</th>
+                    <th class="p-3">Size</th>
+                    <th class="p-3">Price</th>
+                    <th class="p-3">Stock</th>
+                    <th class="p-3">Action</th>
+                </tr>
+            </thead>
+            <tbody id="productList"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- INVENTORY -->
+<section id="inventory" class="section hidden">
+    <h2 class="text-xl font-bold mb-5">Inventory Management</h2>
+    <div class="bg-white rounded-xl overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-pink-100">
+                <tr>
+                    <th class="p-3">Product</th>
+                    <th class="p-3">Size</th>
+                    <th class="p-3">Stock</th>
+                    <th class="p-3">Status</th>
+                </tr>
+            </thead>
+            <tbody id="inventoryList"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- CUSTOMERS -->
+<section id="customers" class="section hidden">
+    <div class="flex justify-between mb-5">
+        <h2 class="text-xl font-bold">Customer List</h2>
+        <button onclick="addCustomer()" class="btn">+ Add Customer</button>
+    </div>
+
+    <div class="bg-white rounded-xl overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-pink-100">
+                <tr>
+                    <th class="p-3">Name</th>
+                    <th class="p-3">Phone</th>
+                    <th class="p-3">Action</th>
+                </tr>
+            </thead>
+            <tbody id="customerList"></tbody>
+        </table>
+    </div>
+</section>
+
+<!-- SALES -->
+<section id="sales" class="section hidden">
+    <h2 class="text-xl font-bold mb-5">Record Sales</h2>
+
+    <div class="bg-white p-6 rounded-xl max-w-lg space-y-4">
+
+        <label class="block">Customer</label>
+        <select id="customerSelect" class="field">
+            <option value="">Walk-in Customer</option>
+        </select>
+
+        <label class="block">Select Perfume</label>
+        <select id="productSelect" onchange="calculate()" class="field"></select>
+
+        <label class="block">Quantity</label>
+        <input type="number" id="quantity" value="1" min="1"
+            oninput="calculate()" class="field">
+
+        <label class="block">Payment Method</label>
+        <select id="payment" class="field">
+            <option>Cash</option>
+            <option>GCash</option>
+        </select>
+
+        <div class="bg-pink-100 p-4 rounded-lg">
+            <p>Total Amount</p>
+            <h2 id="totalAmount" class="text-2xl font-bold">₱0.00</h2>
+        </div>
+
+        <button onclick="saveSale()" class="btn w-full">
+            Complete Sale
+        </button>
+    </div>
+</section>
+
+<!-- TRANSACTIONS -->
+<section id="transactions" class="section hidden">
+    <h2 class="text-xl font-bold mb-5">Transaction History</h2>
+
+    <div class="bg-white rounded-xl overflow-x-auto">
+        <table class="w-full text-left">
+            <thead class="bg-pink-100">
+                <tr>
+                    <th class="p-3">Date</th>
+                    <th class="p-3">Customer</th>
+                    <th class="p-3">Product</th>
+                    <th class="p-3">Quantity</th>
+                    <th class="p-3">Total</th>
+                </tr>
+            </thead>
+            <tbody id="transactionList"></tbody>
+        </table>
+    </div>
+</section>
+
+</main>
+</div>
+
+<style>
+.menu {
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:12px;
+    border-radius:8px;
+}
+.menu:hover { background:#594541; }
+.mobile {
+    background:#352B2A;
+    color:white;
+    padding:9px;
+    border-radius:7px;
+}
+.card {
+    background:white;
+    padding:22px;
+    border-radius:12px;
+}
+.number {
+    font-size:28px;
+    font-weight:bold;
+    margin-top:12px;
+}
+.btn {
+    background:#A77969;
+    color:white;
+    padding:10px 16px;
+    border-radius:8px;
+}
+.field {
+    width:100%;
+    padding:12px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    margin-bottom:12px;
+}
+th,td { padding:12px; }
+</style>
+
+<script>
+// SAMPLE DATA
+let products = JSON.parse(localStorage.getItem('products')) || [
+    {name:'Sweet Vanilla',category:'Sweet',size:'30ml',price:90,stock:20},
+    {name:'Floral Bloom',category:'Floral',size:'30ml',price:80,stock:15},
+    {name:'Ocean Breeze',category:'Fresh',size:'50ml',price:150,stock:10}
+];
+
+let customers = JSON.parse(localStorage.getItem('customers')) || [];
+let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+function saveData() {
+    localStorage.setItem('products',JSON.stringify(products));
+    localStorage.setItem('customers',JSON.stringify(customers));
+    localStorage.setItem('transactions',JSON.stringify(transactions));
+}
+
+// NAVIGATION
+function page(name) {
+    document.querySelectorAll('.section').forEach(s=>s.classList.add('hidden'));
+    document.getElementById(name).classList.remove('hidden');
+
+    let titles = {
+        dashboard:'Dashboard',
+        products:'Products',
+        inventory:'Inventory',
+        customers:'Customers',
+        sales:'Sales',
+        transactions:'Transactions'
+    };
+
+    document.getElementById('title').textContent=titles[name];
+    render();
+}
+
+// ADD PRODUCT
+function addProduct() {
+    let name=prompt('Enter perfume name:');
+    if(!name || !name.trim()) return;
+
+    let category=prompt('Enter category:');
+    if(!category) return;
+
+    let size=prompt('Enter size (10ml, 30ml, 50ml):');
+    if(!size) return;
+
+    let price=Number(prompt('Enter price:'));
+    let stock=Number(prompt('Enter stock:'));
+
+    if(!Number.isFinite(price) || price<=0 ||
+       !Number.isInteger(stock) || stock<0) {
+        alert('Invalid price or stock.');
+        return;
+    }
+
+    products.push({name:name.trim(),category,size,price,stock});
+    saveData();
+    render();
+}
+
+// DELETE PRODUCT
+function deleteProduct(index) {
+    if(!confirm('Delete this product?')) return;
+    products.splice(index,1);
+    saveData();
+    render();
+}
+
+// ADD CUSTOMER
+function addCustomer() {
+    let name=prompt('Enter customer name:');
+    if(!name || !name.trim()) return;
+
+    let phone=prompt('Enter phone number:') || '';
+
+    customers.push({name:name.trim(),phone});
+    saveData();
+    render();
+}
+
+// DELETE CUSTOMER
+function deleteCustomer(index) {
+    if(!confirm('Delete customer?')) return;
+    customers.splice(index,1);
+    saveData();
+    render();
+}
+
+// SALES
+function calculate() {
+    let index=Number(document.getElementById('productSelect').value);
+    let qty=Number(document.getElementById('quantity').value);
+    let product=products[index];
+
+    let total=product && Number.isInteger(qty) && qty>0
+        ? product.price*qty : 0;
+
+    document.getElementById('totalAmount').textContent=
+        '₱'+total.toFixed(2);
+}
+
+function saveSale() {
+    let index=Number(document.getElementById('productSelect').value);
+    let qty=Number(document.getElementById('quantity').value);
+    let product=products[index];
+
+    if(!product || !Number.isInteger(qty) || qty<1) {
+        alert('Please select a valid product and quantity.');
+        return;
+    }
+
+    if(qty>product.stock) {
+        alert('Not enough stock available!');
+        return;
+    }
+
+    let customerIndex=document.getElementById('customerSelect').value;
+    let customer=customerIndex==='' ? 'Walk-in Customer' :
+        customers[Number(customerIndex)].name;
+
+    let total=product.price*qty;
+
+    transactions.push({
+        date:new Date().toLocaleDateString(),
+        customer:customer,
+        product:product.name,
+        quantity:qty,
+        total:total,
+        payment:document.getElementById('payment').value
+    });
+
+    product.stock-=qty;
+
+    saveData();
+
+    document.getElementById('quantity').value=1;
+
+    alert('Sale successfully recorded!');
+    render();
+    calculate();
+}
+
+// DISPLAY DATA
+function render() {
+
+    document.getElementById('totalProducts').textContent=products.length;
+    document.getElementById('totalCustomers').textContent=customers.length;
+
+    let total=transactions.reduce((sum,t)=>sum+t.total,0);
+
+    document.getElementById('totalSales').textContent='₱'+total.toFixed(2);
+
+    document.getElementById('lowStock').textContent=
+        products.filter(p=>p.stock<=5).length;
+
+    document.getElementById('productList').innerHTML=products.map((p,i)=>`
+        <tr class="border-t">
+            <td>${escapeHTML(p.name)}</td>
+            <td>${escapeHTML(p.category)}</td>
+            <td>${escapeHTML(p.size)}</td>
+            <td>₱${p.price.toFixed(2)}</td>
+            <td>${p.stock}</td>
+            <td>
+                <button onclick="deleteProduct(${i})" class="text-red-500">Delete</button>
+            </td>
+        </tr>
+    `).join('');
+
+    document.getElementById('inventoryList').innerHTML=products.map(p=>`
+        <tr class="border-t">
+            <td>${escapeHTML(p.name)}</td>
+            <td>${escapeHTML(p.size)}</td>
+            <td>${p.stock}</td>
+            <td class="${p.stock<=5?'text-red-500':'text-green-600'}">
+                ${p.stock<=5?'Low Stock':'Available'}
+            </td>
+        </tr>
+    `).join('');
+
+    document.getElementById('customerList').innerHTML=customers.map((c,i)=>`
+        <tr class="border-t">
+            <td>${escapeHTML(c.name)}</td>
+            <td>${escapeHTML(c.phone)}</td>
+            <td><button onclick="deleteCustomer(${i})" class="text-red-500">Delete</button></td>
+        </tr>
+    `).join('');
+
+    document.getElementById('customerSelect').innerHTML=
+        '<option value="">Walk-in Customer</option>'+
+        customers.map((c,i)=>`<option value="${i}">${escapeHTML(c.name)}</option>`).join('');
+
+    document.getElementById('productSelect').innerHTML=
+        '<option value="">Select Product</option>'+
+        products.map((p,i)=>`<option value="${i}">${escapeHTML(p.name)} - ₱${p.price}</option>`).join('');
+
+    document.getElementById('transactionList').innerHTML=transactions.map(t=>`
+        <tr class="border-t">
+            <td>${escapeHTML(t.date)}</td>
+            <td>${escapeHTML(t.customer)}</td>
+            <td>${escapeHTML(t.product)}</td>
+            <td>${t.quantity}</td>
+            <td>₱${t.total.toFixed(2)}</td>
+        </tr>
+    `).join('');
+
+    calculate();
+}
+
+function escapeHTML(value) {
+    return String(value).replace(/[&<>"']/g,c=>({
+        '&':'&amp;',
+        '<':'&lt;',
+        '>':'&gt;',
+        '"':'&quot;',
+        "'":'&#39;'
+    })[c]);
+}
+
+render();
+</script>
+
+</body>
+</html>
